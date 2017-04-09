@@ -16,6 +16,7 @@
     "serve-favicon": "~2.4.2",
     "anyproxy": "~3.10.4"
   },
+  "readmeFilename": "./README.md",
   "keywords": [
     "nodemonkey",
     "monkey"
