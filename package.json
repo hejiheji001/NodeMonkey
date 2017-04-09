@@ -4,7 +4,7 @@
   "description": "A GreaseMonkey Like Node JS Platform",
   "main": "app.js",
   "bin": {
-    "nodemonkey": "node ./bin/www"
+    "nodemonkey": "./bin/www"
   },
   "dependencies": {
     "body-parser": "~1.17.1",
