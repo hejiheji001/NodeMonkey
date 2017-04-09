@@ -1,6 +1,6 @@
 {
   "name": "nodemonkey",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A GreaseMonkey Like Node JS Platform",
   "main": "app.js",
   "scripts": {
