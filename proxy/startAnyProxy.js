@@ -5,7 +5,7 @@ var bodyParser = require("body-parser"),
     fs = require("fs");
 
 var conf = require("../config/conf.js");
-var code = "";
+var code = [];
 var mapConfig = [],
     configFile = "mapConfig.json";
 
@@ -51,7 +51,10 @@ module.exports = {
             if (err) {
                 return console.log(err);
             }
-            code = data.replace(/\r\n/g, "").split("//code");
+            var inline = data.replace(/\r\n/g, "");
+            var match = inline.split("\@match")[1].split("// ")[0].trim();
+            var script = inline.split("// ==/UserScript==")[1];
+            code = [match, script];
         });
         return code;
     },
@@ -73,16 +76,12 @@ module.exports = {
 
     //替换服务器响应的数据
     replaceServerResDataAsync: function (req, res, serverResData, callback) {
-        var that = this;
-        if(code){
+        if(code.length > 0){
             var script = code;
+            console.log(script);
             if (new RegExp(script[0].substr(9).trim(), "i").test(req.url)) {
                 try {
-                    var resStr = serverResData.toString().replace("s.parentNode.insertBefore(hm, s);", "" + script[1]);
-
-
-                        //.split("</html>")[0] += "<script type='text/javascript'>" + script[1] + "</script></html>";
-                    //console.log(resStr);
+                    var resStr = serverResData.toString().replace("</body>", "<script type='application/javascript'>" + script[1] + "</script></body>");
                     callback(resStr);
                 } catch (e) {
                     console.log(e);

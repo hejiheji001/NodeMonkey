@@ -1,5 +1,12 @@
-//http://promotion.creditcard.cmbc.com.cn/promotion/*
-//code
+// ==UserScript==
+// @name         TTMSR
+// @namespace    http://tampermonkey.net/
+// @version      0.5
+// @description  try to take over the world!
+// @author       You
+// @match        http://promotion.creditcard.cmbc.com.cn/promotion/*
+// @grant        none
+// ==/UserScript==
 (function() {
     //'use strict';
 
