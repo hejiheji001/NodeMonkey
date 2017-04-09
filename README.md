@@ -1,6 +1,10 @@
 # NodeMonkey
 Activate Your Favourite [UserScript](https://greasyfork.org/zh-CN) In Your Mobile!
 
+Install
+
+`npm install -g nodemonkey`
+
 Usage
 
 1. Place Your UserScript File Into Folder _*rules*_
