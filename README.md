@@ -1,5 +1,5 @@
 # NodeMonkey
-A GreaseMonkey Like Node JS Platform
+Activate Your Favourite [UserScript](https://greasyfork.org/zh-CN) In Your Mobile!
 
 Usage
 
