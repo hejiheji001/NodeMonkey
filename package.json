@@ -1,6 +1,6 @@
 {
   "name": "nodemonkey",
-  "version": "0.1",
+  "version": "1.0.0",
   "description": "A GreaseMonkey Like Node JS Platform",
   "main": "app.js",
   "scripts": {
@@ -20,8 +20,8 @@
     "nodemonkey",
     "monkey"
   ],
+  "license": "ISC",
   "author": {
     "FireAwayH": "hejiheji001@gmail.com"
-  },
-  "license": "ISC"
+  }
 }
