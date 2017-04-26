@@ -51,13 +51,14 @@ module.exports = {
             if (err) {
                 return console.log(err);
             }
-            var inline = data.replace(/\r\n/g, "");
+            var inline = data.replace(/\r\n/g, "").replace(/\t/g, "");
             var match = inline.split("\@match")[1].split("// ")[0].trim();
             var script = inline.split("// ==/UserScript==")[1];
             code = [match, script];
         });
         return code;
     },
+
 
     //replaceRequestProtocol: function (req, protocol) {
     //},
@@ -71,15 +72,32 @@ module.exports = {
     //replaceResponseStatusCode: function (req, res, statusCode) {
     //},
     //
-    //replaceResponseHeader: function (req, res, header) {
-    //},
+    replaceRequestOption : function(req,option){
+        var newOption = option;
+        delete newOption.headers['if-none-match'];
+        delete newOption.headers['if-modified-since'];
+
+        return newOption;
+    },
+
+    replaceResponseHeader: function(req,res,header){
+        header = header || {};
+        header["Cache-Control"]                    = "no-cache, no-store, must-revalidate";
+        header["Pragma"]                           = "no-cache";
+        header["Expires"]                          = 0;
+
+        return header;
+    },
 
     //替换服务器响应的数据
     replaceServerResDataAsync: function (req, res, serverResData, callback) {
         if(code.length > 0){
             var script = code;
-            console.log(script);
-            if (new RegExp(script[0].substr(9).trim(), "i").test(req.url)) {
+            var match = script[0].trim().replace("http://", "").replace("https://", "");
+            // console.log(new RegExp(match, "i").test(req.headers.host + req.url));
+            // console.log(req.headers.host + req.url + "###");
+            // console.log(match + "@@@");
+            if (new RegExp(match, "i").test(req.headers.host + req.url)) {
                 try {
                     var resStr = serverResData.toString().replace("</body>", "<script type='application/javascript'>" + script[1] + "</script></body>");
                     callback(resStr);
