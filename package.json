@@ -1,28 +1,4 @@
 {
-  "_from": "nodemonkey",
-  "_id": "nodemonkey@1.1.0",
-  "_inBundle": false,
-  "_integrity": "sha1-JYSOp1+LJ7jwOXYH6XFOMY2yxY0=",
-  "_location": "/nodemonkey",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "tag",
-    "registry": true,
-    "raw": "nodemonkey",
-    "name": "nodemonkey",
-    "escapedName": "nodemonkey",
-    "rawSpec": "",
-    "saveSpec": null,
-    "fetchSpec": "latest"
-  },
-  "_requiredBy": [
-    "#USER",
-    "/"
-  ],
-  "_resolved": "https://registry.npmjs.org/nodemonkey/-/nodemonkey-1.0.7.tgz",
-  "_shasum": "25848ea75f8b27b8f0397607e9714e318db2c58d",
-  "_spec": "nodemonkey",
-  "_where": "C:\\WINDOWS\\system32",
   "author": "https://github.com/hejiheji001",
   "bin": {
     "nodemonkey": "./bin/www"
