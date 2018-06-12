@@ -1,50 +1,28 @@
 {
-  "_from": "nodemonkey",
-  "_id": "nodemonkey@1.1.0",
-  "_inBundle": false,
-  "_integrity": "sha1-JYSOp1+LJ7jwOXYH6XFOMY2yxY0=",
-  "_location": "/nodemonkey",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "tag",
-    "registry": true,
-    "raw": "nodemonkey",
-    "name": "nodemonkey",
-    "escapedName": "nodemonkey",
-    "rawSpec": "",
-    "saveSpec": null,
-    "fetchSpec": "latest"
-  },
-  "_requiredBy": [
-    "#USER",
-    "/"
-  ],
-  "_resolved": "https://registry.npmjs.org/nodemonkey/-/nodemonkey-1.0.7.tgz",
-  "_shasum": "25848ea75f8b27b8f0397607e9714e318db2c58d",
-  "_spec": "nodemonkey",
-  "_where": "C:\\WINDOWS\\system32",
-  "author": "https://github.com/hejiheji001",
+  "name": "nodemonkey",
+  "version": "1.0.6",
+  "description": "A GreaseMonkey Like Node JS Platform",
+  "main": "app.js",
   "bin": {
     "nodemonkey": "./bin/www"
   },
   "dependencies": {
-    "anyproxy": "^4.0.10",
-    "body-parser": "^1.18.3",
-    "cookie-parser": "^1.4.3",
-    "debug": "^2.6.9",
-    "express": "^4.15.5",
-    "jade": "^1.11.0",
-    "morgan": "^1.8.2",
-    "serve-favicon": "^2.4.5"
+    "body-parser": "~1.17.1",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.3",
+    "express": "~4.15.2",
+    "jade": "~1.11.0",
+    "morgan": "~1.8.1",
+    "serve-favicon": "~2.4.2",
+    "anyproxy": "~3.10.4"
   },
-  "deprecated": false,
-  "description": "A GreaseMonkey Like Node JS Platform",
+  "readmeFilename": "./README.md",
   "keywords": [
     "nodemonkey",
     "monkey"
   ],
   "license": "ISC",
-  "main": "app.js",
-  "name": "nodemonkey",
-  "version": "1.0.8"
+  "author": {
+    "FireAwayH": "hejiheji001@gmail.com"
+  }
 }

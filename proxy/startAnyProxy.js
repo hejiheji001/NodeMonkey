@@ -1,64 +1,168 @@
 /**
- * Created by FireAwayH on 12/06/2018.
+ * Created by FireAwayH on 09/04/2017.
  */
-const fs = require("fs"), conf = require("../config/conf.js"), code = [];
+var bodyParser = require("body-parser"),
+    fs = require("fs");
 
-const getInsertionCode = () => {
-    console.log("Loading Script: " + conf.insertion);
-    fs.readFile('./rules/' + conf.insertion + '.js', 'utf8', function (err, data) {
-        if (err) {
-            return console.log("Error: " + err);
-        }
-
-        console.log("Load Script: " + data.length);
-
-        let match = data.split("\@match")[1].split("// ")[0].trim();
-        console.log("Load Script: " + match.length);
-
-        let script = data.split("// ==/UserScript==")[1];
-        console.log("Load Script: " + script.length);
-
-        code = [match, script];
-
-        if (data.split("// ==/UserScript==").length == 3) {
-            code.push(data.split("// ==/UserScript==")[2]);
-        }
-
-        console.log("Load Script: " + code.length);
-    });
-},
-    stringToFunction = funcStr => {
-        let fn = new Function("return " + funcStr);
-        return fn();
-    }
+var conf = require("../config/conf.js");
+var code = [];
+var mapConfig = [],
+    configFile = "mapConfig.json";
 
 module.exports = {
-    *beforeSendResponse(requestDetail, responseDetail) {
-        const newResponse = responseDetail.response;
-        newResponse.header["Cache-Control"] = "no-cache, no-store, must-revalidate, max-age=0";
-        newResponse.header["Pragma"] = "no-cache";
-        newResponse.header["Expires"] = 0;
+    token: Date.now(),
+    summary: function () {
+        var tip = "the default rule for AnyProxy.";
+        return tip;
+    },
 
-
-        if (code.length > 0) {
-            let script = code;
-            let match = script[0].trim().replace("http://", "").replace("https://", "");
-            if (new RegExp(match, "i").test(requestDetail.url)) {
-
-                try {
-                    newResponse.body = newResponse.body.toString().replace("</head>", '<script type="text/javascript">' + script[1] + "</script></head>");
-                    console.log("Code Injected");
-                } catch (e) {
-                    console.log("\x1b[31m", `Error: ${e}`);
-                }
+    shouldUseLocalResponse: function (req, reqBody) {
+        //intercept all options request
+        var simpleUrl = (req.headers.host || "") + (req.url || "");
+        mapConfig.map(function (item) {
+            var key = item.keyword;
+            if (simpleUrl.indexOf(key) >= 0) {
+                req.anyproxy_map_local = item.local;
+                return false;
             }
-        } else {
-            console.log("Retry");
-            this.getInsertionCode();
-        }
+        });
 
-        return {
-            response: newResponse
-        };
+
+        return !!req.anyproxy_map_local;
+    },
+
+    dealLocalResponse: function (req, reqBody, callback) {
+        if (req.anyproxy_map_local) {
+            fs.readFile(req.anyproxy_map_local, function (err, buffer) {
+                if (err) {
+                    callback(200, {}, "[AnyProxy failed to load local file] " + err);
+                } else {
+                    var header = {
+                        'Content-Type': utils.contentType(req.anyproxy_map_local)
+                    };
+                    callback(200, header, buffer);
+                }
+            });
+        }
+    },
+
+    getInsertionCode: function(){
+        fs.readFile('./rules/' + conf.insertion + '.js', 'utf8', function (err,data) {
+            if (err) {
+                return console.log(err);
+            }
+            var inline = data.replace(/\r\n/g, "").replace(/\t/g, "");
+            var match = inline.split("\@match")[1].split("// ")[0].trim();
+            var script = inline.split("// ==/UserScript==")[1];
+            code = [match, script];
+        });
+        return code;
+    },
+
+
+    //replaceRequestProtocol: function (req, protocol) {
+    //},
+    //
+    //replaceRequestOption: function (req, option) {
+    //},
+    //
+    //replaceRequestData: function (req, data) {
+    //},
+    //
+    //replaceResponseStatusCode: function (req, res, statusCode) {
+    //},
+    //
+    replaceRequestOption : function(req,option){
+        var newOption = option;
+        delete newOption.headers['if-none-match'];
+        delete newOption.headers['if-modified-since'];
+
+        return newOption;
+    },
+
+    replaceResponseHeader: function(req,res,header){
+        header = header || {};
+        header["Cache-Control"]                    = "no-cache, no-store, must-revalidate";
+        header["Pragma"]                           = "no-cache";
+        header["Expires"]                          = 0;
+
+        return header;
+    },
+
+    //替换服务器响应的数据
+    replaceServerResDataAsync: function (req, res, serverResData, callback) {
+        if(code.length > 0){
+            var script = code;
+            var match = script[0].trim().replace("http://", "").replace("https://", "");
+            // console.log(new RegExp(match, "i").test(req.headers.host + req.url));
+            // console.log(req.headers.host + req.url + "###");
+            // console.log(match + "@@@");
+            if (new RegExp(match, "i").test(req.headers.host + req.url)) {
+                try {
+                    var resStr = serverResData.toString().replace("</body>", "<script type='application/javascript'>" + script[1] + "</script></body>");
+                    callback(resStr);
+                } catch (e) {
+                    console.log(e);
+                }
+            } else {
+                callback(serverResData);
+            }
+        }else{
+            this.getInsertionCode();
+            callback(serverResData);
+        }
+    },
+
+    //pauseBeforeSendingResponse: function (req, res) {
+    //},
+
+    shouldInterceptHttpsReq: function (req) {
+        return interceptFlag;
+    },
+
+    ////[beta]
+    ////fetch entire traffic data
+    //fetchTrafficData: function (id, info) {
+    //},
+
+    setInterceptFlag: function (flag) {
+        interceptFlag = flag;
+    },
+
+    _plugIntoWebinterface: function (app, cb) {
+
+        app.get("/filetree", function (req, res) {
+            try {
+                var root = req.query.root || utils.getUserHome() || "/";
+                utils.filewalker(root, function (err, info) {
+                    res.json(info);
+                });
+            } catch (e) {
+                res.end(e);
+            }
+        });
+
+        app.use(bodyParser.json());
+        app.get("/getMapConfig", function (req, res) {
+            res.json(mapConfig);
+        });
+        app.post("/setMapConfig", function (req, res) {
+            mapConfig = req.body;
+            res.json(mapConfig);
+
+            saveMapConfig(mapConfig);
+        });
+
+        cb();
+    },
+
+    _getCustomMenu: function () {
+        return [
+            // {
+            //     name:"test",
+            //     icon:"uk-icon-lemon-o",
+            //     url :"http://anyproxy.io"
+            // }
+        ];
     }
 };
